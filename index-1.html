@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen blanc — DU Psychopharmacologie</title>
+<style>
+  /* ============================================================
+     PALETTE — "salle d'examen", clinique et calme
+     ============================================================ */
+  :root{
+    --bg:        #e9edf1;      /* fond cool, papier sous lumière froide */
+    --surface:   #ffffff;
+    --surface-2: #f6f8fa;
+    --ink:       #182230;      /* ardoise profonde */
+    --ink-soft:  #51606e;
+    --ink-faint: #8190a0;
+    --line:      #d6dde4;
+    --line-soft: #e6ebef;
+    --accent:    #3a3f93;      /* indigo "neuro", actions */
+    --accent-d:  #2c3076;
+    --accent-bg: #ecedf8;
+    --ok:        #2f7a5b;      /* émeraude calme */
+    --ok-bg:     #e6f2ec;
+    --bad:       #a23e48;      /* argile/rose, non alarmiste */
+    --bad-bg:    #f6e8ea;
+    --warn:      #9a6300;      /* ambre, minuteur bas */
+    --warn-bg:   #f8efdc;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono: ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --shadow: 0 1px 2px rgba(24,34,48,.06), 0 8px 28px rgba(24,34,48,.07);
+    --radius: 12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+  .hidden{display:none !important;}
+  button{font-family:inherit;cursor:pointer;}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0;}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+
+  /* ---------- boutons ---------- */
+  .btn{
+    border:1px solid transparent;border-radius:9px;padding:.72em 1.4em;
+    font-size:.98rem;font-weight:600;letter-spacing:.01em;transition:background .15s,border-color .15s,transform .05s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:var(--accent-d);}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink-soft);}
+  .btn-ghost:hover{border-color:var(--ink-faint);color:var(--ink);}
+  .btn:focus-visible{outline:3px solid var(--accent-bg);outline-offset:2px;}
+
+  /* ============================================================
+     ÉCRAN D'ACCUEIL — feuille de convocation
+     ============================================================ */
+  #start{padding:56px 0 80px;}
+  .cover{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
+  }
+  .cover-head{
+    padding:38px 44px 30px;border-bottom:1px solid var(--line-soft);
+    background:linear-gradient(180deg,#fbfcfd,#fff);
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:14px;
+  }
+  .cover-head h1{font-size:2.15rem;margin-bottom:6px;letter-spacing:-.01em;}
+  .cover-head .sub{color:var(--ink-soft);font-size:1.02rem;}
+  .cover-body{padding:30px 44px 40px;}
+
+  .consignes{display:grid;grid-template-columns:1fr 1fr;gap:14px 34px;margin:4px 0 28px;}
+  .csg{display:flex;gap:14px;align-items:flex-start;padding:4px 0;}
+  .csg .k{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--ink-faint);
+    text-transform:uppercase;min-width:74px;padding-top:3px;
+  }
+  .csg .v{font-size:.96rem;}
+  .csg .v b{font-weight:600;}
+
+  .bareme{
+    background:var(--surface-2);border:1px solid var(--line-soft);border-radius:10px;
+    padding:18px 22px;margin-bottom:26px;
+  }
+  .bareme h3{font-size:1.04rem;margin-bottom:8px;font-family:var(--sans);font-weight:700;}
+  .bareme ul{margin:0;padding-left:1.1em;color:var(--ink-soft);font-size:.93rem;}
+  .bareme li{margin:.18em 0;}
+  .bareme .pos{color:var(--ok);font-weight:600;}
+  .bareme .neg{color:var(--bad);font-weight:600;}
+
+  .setup{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;margin-bottom:8px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:.82rem;color:var(--ink-soft);font-weight:600;}
+  .field input{
+    width:120px;font-family:var(--mono);font-size:1rem;padding:.5em .6em;
+    border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);
+  }
+  .field input:focus{outline:none;border-color:var(--accent);}
+  .bankline{
+    margin:18px 0 26px;font-size:.9rem;color:var(--ink-soft);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .badge{
+    font-family:var(--mono);font-size:.72rem;padding:.25em .6em;border-radius:999px;
+    border:1px solid var(--line);background:#fff;color:var(--ink-soft);
+  }
+  .badge.demo{background:var(--warn-bg);border-color:#e7d2a0;color:var(--warn);}
+  .badge.live{background:var(--ok-bg);border-color:#bfe0cf;color:var(--ok);}
+  .file-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px;}
+  .start-actions{display:flex;align-items:center;gap:16px;margin-top:14px;}
+  .note{font-size:.82rem;color:var(--ink-faint);}
+  details.schema{margin-top:22px;border-top:1px solid var(--line-soft);padding-top:16px;}
+  details.schema summary{cursor:pointer;font-size:.86rem;color:var(--ink-soft);font-weight:600;}
+  details.schema pre{
+    background:#0f1622;color:#cdd6e4;border-radius:8px;padding:16px;overflow:auto;
+    font-family:var(--mono);font-size:.78rem;line-height:1.5;margin-top:12px;
+  }
+
+  /* ============================================================
+     ÉCRAN EXAMEN
+     ============================================================ */
+  .topbar{
+    position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);
+    backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1080px;margin:0 auto;padding:12px 28px;
+    display:flex;align-items:center;gap:24px;
+  }
+  .tb-title{font-family:var(--serif);font-size:1.02rem;color:var(--ink);white-space:nowrap;}
+  .tb-counter{font-family:var(--mono);font-size:.85rem;color:var(--ink-soft);white-space:nowrap;}
+  .tb-spacer{flex:1;}
+  .timer{
+    font-family:var(--mono);font-size:1.5rem;font-weight:600;letter-spacing:.02em;
+    padding:.1em .5em;border-radius:8px;color:var(--ink);
+    display:flex;align-items:baseline;gap:.4em;
+  }
+  .timer .tlabel{font-family:var(--sans);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);}
+  .timer.warn{color:var(--warn);background:var(--warn-bg);}
+  .timer.crit{color:var(--bad);background:var(--bad-bg);}
+  .progress{height:3px;background:var(--line-soft);}
+  .progress > i{display:block;height:100%;background:var(--accent);transition:width .3s;}
+
+  #exam{padding:34px 0 120px;}
+  .exam-grid{display:grid;grid-template-columns:1fr 188px;gap:40px;align-items:start;}
+
+  .qcard{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:34px 38px 30px;animation:rise .28s ease both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .q-tags{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+    padding:.28em .62em;border-radius:6px;background:var(--accent-bg);color:var(--accent-d);}
+  .tag.case{background:#eef3f0;color:var(--ok);}
+  .q-case{
+    background:var(--surface-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:14px 18px;margin-bottom:20px;font-size:.95rem;color:var(--ink-soft);font-style:italic;
+  }
+  .q-enonce{font-size:1.32rem;font-family:var(--serif);line-height:1.32;margin-bottom:6px;}
+  .q-hint{font-size:.84rem;color:var(--ink-faint);margin-bottom:22px;}
+
+  .opts{display:flex;flex-direction:column;gap:10px;margin-bottom:30px;}
+  .opt{
+    display:flex;gap:14px;align-items:flex-start;padding:14px 16px;
+    border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;
+    transition:border-color .12s,background .12s;
+  }
+  .opt:hover{border-color:var(--accent);background:#fcfcff;}
+  .opt.sel{border-color:var(--accent);background:var(--accent-bg);}
+  .opt input{margin:0;width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:var(--accent);cursor:pointer;}
+  .opt .otxt{font-size:1rem;}
+  .opt .oletter{font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);margin-right:.3em;}
+
+  .qcard-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line-soft);padding-top:22px;}
+  .qcard-foot .left{font-size:.84rem;color:var(--ink-faint);}
+
+  /* feuille de réponses / progression */
+  .sheet{
+    position:sticky;top:90px;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);
+  }
+  .sheet h3{font-family:var(--sans);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:14px;}
+  .dots{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+  .dot{
+    aspect-ratio:1;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);
+    font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .dot.done{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .dot.blank{background:#fff;border-color:var(--line);color:var(--ink-faint);}
+  .dot.cur{outline:2px solid var(--accent);outline-offset:1px;color:var(--accent);border-color:var(--accent);background:#fff;font-weight:700;}
+  .sheet .legend{margin-top:14px;font-size:.74rem;color:var(--ink-faint);line-height:1.7;}
+  .sheet .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:6px;}
+  .sheet .end{margin-top:16px;}
+  .sheet .end .btn{width:100%;font-size:.86rem;padding:.6em 1em;}
+
+  /* ============================================================
+     ÉCRAN RÉSULTATS
+     ============================================================ */
+  #results{padding:48px 0 100px;}
+  .verdict{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;margin-bottom:28px;
+  }
+  .verdict-top{display:flex;align-items:stretch;}
+  .vt-score{
+    padding:34px 44px;border-right:1px solid var(--line-soft);text-align:center;min-width:240px;
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  .vt-score .big{font-family:var(--mono);font-size:3.6rem;font-weight:700;line-height:1;}
+  .vt-score .out{font-family:var(--mono);font-size:1.1rem;color:var(--ink-faint);}
+  .vt-score .verdict-label{margin-top:14px;font-family:var(--sans);font-weight:700;font-size:1.05rem;padding:.3em .9em;border-radius:999px;display:inline-block;}
+  .vt-score.pass .big{color:var(--ok);}
+  .vt-score.pass .verdict-label{background:var(--ok-bg);color:var(--ok);}
+  .vt-score.fail .big{color:var(--bad);}
+  .vt-score.fail .verdict-label{background:var(--bad-bg);color:var(--bad);}
+  .vt-meta{flex:1;padding:30px 40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px 26px;align-content:center;}
+  .stat .lab{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px;}
+  .stat .val{font-family:var(--mono);font-size:1.5rem;font-weight:600;}
+  .vt-foot{padding:18px 44px;border-top:1px solid var(--line-soft);background:var(--surface-2);font-size:.9rem;color:var(--ink-soft);}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px 38px;margin-bottom:26px;}
+  .panel > h2{font-size:1.25rem;margin-bottom:6px;}
+  .panel > .psub{color:var(--ink-soft);font-size:.92rem;margin-bottom:22px;}
+
+  .mod-row{display:grid;grid-template-columns:62px 1fr 92px;align-items:center;gap:16px;padding:9px 0;border-top:1px solid var(--line-soft);}
+  .mod-row:first-of-type{border-top:none;}
+  .mod-row .mlab{font-family:var(--mono);font-size:.86rem;color:var(--ink-soft);}
+  .mbar{height:14px;background:var(--surface-2);border-radius:7px;overflow:hidden;border:1px solid var(--line-soft);}
+  .mbar > i{display:block;height:100%;background:var(--accent);}
+  .mod-row .mval{font-family:var(--mono);font-size:.84rem;text-align:right;color:var(--ink-soft);}
+
+  /* revue détaillée */
+  .rev{border:1px solid var(--line);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+  .rev-head{display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;background:#fff;}
+  .rev-head:hover{background:var(--surface-2);}
+  .rev-n{font-family:var(--mono);font-size:.8rem;color:var(--ink-faint);min-width:42px;}
+  .rev-q{flex:1;font-size:.98rem;font-family:var(--serif);}
+  .rev-score{font-family:var(--mono);font-size:.92rem;font-weight:600;min-width:62px;text-align:right;}
+  .rev-score.p{color:var(--ok);}
+  .rev-score.n{color:var(--bad);}
+  .rev-score.z{color:var(--ink-faint);}
+  .rev-body{padding:4px 20px 20px;border-top:1px solid var(--line-soft);background:var(--surface-2);}
+  .rev-case{font-style:italic;color:var(--ink-soft);font-size:.9rem;margin:14px 0;}
+  .rev-opt{display:flex;gap:11px;align-items:flex-start;padding:9px 12px;border-radius:8px;margin:6px 0;font-size:.93rem;background:#fff;border:1px solid var(--line-soft);}
+  .rev-opt .mk{font-family:var(--mono);font-size:.86rem;min-width:62px;font-weight:600;}
+  .rev-opt.correct{border-color:#bfe0cf;background:var(--ok-bg);}
+  .rev-opt.correct .mk{color:var(--ok);}
+  .rev-opt.wrongpick{border-color:#e6b9bf;background:var(--bad-bg);}
+  .rev-opt.wrongpick .mk{color:var(--bad);}
+  .rev-opt.missed{border-style:dashed;}
+  /* jauge -1..+1 */
+  .gauge{margin:16px 0 6px;}
+  .gauge .track{position:relative;height:26px;border-radius:6px;background:linear-gradient(90deg,var(--bad-bg) 0%,var(--surface-2) 50%,var(--ok-bg) 100%);border:1px solid var(--line);}
+  .gauge .zero{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--ink-faint);}
+  .gauge .mark{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .gauge .scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);margin-top:4px;}
+  .rev-src{margin-top:12px;font-size:.8rem;color:var(--ink-faint);}
+
+  .results-actions{display:flex;gap:16px;justify-content:center;margin-top:34px;}
+
+  /* responsive — l'app vise l'écran d'ordinateur ; repli minimal sur petit écran */
+  @media (max-width:820px){
+    .exam-grid{grid-template-columns:1fr;}
+    .sheet{position:static;}
+    .consignes{grid-template-columns:1fr;}
+    .vt-meta{grid-template-columns:repeat(2,1fr);}
+    .verdict-top{flex-direction:column;}
+    .vt-score{border-right:none;border-bottom:1px solid var(--line-soft);}
+    .cover-head,.cover-body,.panel{padding-left:22px;padding-right:22px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================== ACCUEIL ============================== -->
+<section id="start">
+  <div class="wrap">
+    <div class="cover">
+      <div class="cover-head">
+        <div class="eyebrow">Université Paris Cité · DU Psychopharmacologie</div>
+        <h1>Examen blanc</h1>
+        <div class="sub">Conditions reproduites d'après les consignes du Pr&nbsp;Florence&nbsp;Thibaut.</div>
+      </div>
+      <div class="cover-body">
+
+        <div class="consignes">
+          <div class="csg"><div class="k">Épreuve</div><div class="v"><b id="cfg-n-echo">40</b> QCM — chacun vaut <b>1 point</b> (isolés ou en cas clinique).</div></div>
+          <div class="csg"><div class="k">Durée</div><div class="v"><b id="cfg-t-echo">100</b> minutes, puis fermeture automatique.</div></div>
+          <div class="csg"><div class="k">Sens unique</div><div class="v">Pas de retour en arrière : on coche, on valide, c'est verrouillé.</div></div>
+          <div class="csg"><div class="k">Réussite</div><div class="v">Note ramenée sur 20 — admise à partir de <b>10/20</b>.</div></div>
+        </div>
+
+        <div class="bareme">
+          <h3>Barème par QCM (de −1 à +1)</h3>
+          <ul>
+            <li>Plusieurs cases peuvent être correctes dans un même QCM.</li>
+            <li>Chaque item correct coché : <span class="pos">+1 ⁄ nombre d'items corrects</span>.</li>
+            <li>Chaque item faux coché : <span class="neg">−1 ⁄ nombre d'items faux</span>.</li>
+            <li>Un item laissé vide ne rapporte ni ne retire de point.</li>
+          </ul>
+        </div>
+
+        <div class="setup">
+          <div class="field">
+            <label for="cfg-n">Nombre de QCM</label>
+            <input id="cfg-n" type="number" min="1" max="200" value="40">
+          </div>
+          <div class="field">
+            <label for="cfg-t">Durée (minutes)</label>
+            <input id="cfg-t" type="number" min="1" max="300" value="100">
+          </div>
+        </div>
+
+        <div class="bankline">
+          Banque de questions :
+          <span id="bank-badge" class="badge demo">démonstration</span>
+          <span id="bank-count" class="mono"></span>
+        </div>
+
+        <div class="file-row">
+          <input id="file" type="file" accept=".json,application/json" class="hidden">
+          <button class="btn btn-ghost" id="load-btn">Charger ma base (.json)</button>
+          <span class="note" id="load-note">facultatif — pour utiliser les 191 questions validées</span>
+        </div>
+
+        <div class="start-actions">
+          <button class="btn btn-primary" id="begin">Commencer l'examen blanc</button>
+          <span class="note" id="begin-note"></span>
+        </div>
+
+        <details class="schema">
+          <summary>Format JSON attendu (pour brancher la vraie base)</summary>
+          <pre>[
+  {
+    "id": "M1-S1-Q03",
+    "module": "M1",
+    "type": "isolé",                 // ou "cas_clinique"
+    "cas": "texte du cas clinique",  // facultatif
+    "enonce": "Concernant le lithium :",
+    "items": [
+      { "text": "Marge thérapeutique étroite.", "correct": true },
+      { "text": "Métabolisé par le CYP3A4.",     "correct": false }
+    ],
+    "source": "Benyaya, M1 S1"       // facultatif
+  }
+]
+
+Le chargeur tolère aussi les variantes de noms de champs
+(question/énoncé/stem · propositions/options/choices ·
+exacte/isCorrect/vrai · module_id · contexte/case).
+Si l'auto-détection échoue, transformez la base vers ce schéma.</pre>
+        </details>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== EXAMEN ============================== -->
+<section id="exam" class="hidden">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <span class="tb-title">Examen blanc</span>
+      <span class="tb-counter" id="counter">QCM 1 / 40</span>
+      <span class="tb-spacer"></span>
+      <span class="timer" id="timer"><span class="tlabel">temps restant</span><span id="timer-val">100:00</span></span>
+    </div>
+    <div class="progress"><i id="prog" style="width:0%"></i></div>
+  </div>
+
+  <div class="wrap">
+    <div class="exam-grid">
+      <main>
+        <div class="qcard" id="qcard"><!-- injecté --></div>
+        <div class="qcard-foot" style="background:none;border:none;padding:18px 4px 0;">
+          <span class="left" id="multi-note"></span>
+          <button class="btn btn-primary" id="next">Valider et continuer</button>
+        </div>
+      </main>
+      <aside>
+        <div class="sheet">
+          <h3>Feuille de réponses</h3>
+          <div class="dots" id="dots"></div>
+          <div class="legend">
+            <div><i style="background:var(--accent)"></i>répondu</div>
+            <div><i style="background:#fff;border:1px solid var(--line)"></i>laissé vide</div>
+          </div>
+          <div class="end">
+            <button class="btn btn-ghost" id="finish-early">Terminer maintenant</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== RÉSULTATS ============================== -->
+<section id="results" class="hidden">
+  <div class="wrap">
+    <div class="verdict">
+      <div class="verdict-top">
+        <div class="vt-score" id="vt-score">
+          <div><span class="big" id="note20">—</span><span class="out"> / 20</span></div>
+          <div><span class="verdict-label" id="verdict-label">—</span></div>
+        </div>
+        <div class="vt-meta">
+          <div class="stat"><div class="lab">Score brut</div><div class="val" id="raw">—</div></div>
+          <div class="stat"><div class="lab">QCM traités</div><div class="val" id="answered">—</div></div>
+          <div class="stat"><div class="lab">Temps utilisé</div><div class="val" id="time-used">—</div></div>
+          <div class="stat"><div class="lab">Items justes cochés</div><div class="val" id="good-items">—</div></div>
+          <div class="stat"><div class="lab">Items faux cochés</div><div class="val" id="bad-items">—</div></div>
+          <div class="stat"><div class="lab">Seuil d'admission</div><div class="val">10 / 20</div></div>
+        </div>
+      </div>
+      <div class="vt-foot" id="vt-foot"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Par module</h2>
+      <div class="psub">Points obtenus rapportés au maximum possible sur les QCM tirés.</div>
+      <div id="modbreak"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Revue détaillée</h2>
+      <div class="psub">Vos réponses, les bonnes réponses, et le score de chaque QCM sur l'échelle −1 → +1.</div>
+      <div id="review"></div>
+    </div>
+
+    <div class="results-actions">
+      <button class="btn btn-primary" id="again">Refaire un examen blanc</button>
+      <button class="btn btn-ghost" id="back-home">Retour à l'accueil</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* =========================================================================
+   BANQUE DE DÉMONSTRATION
+   Faits standards de psychopharmacologie — à remplacer par la base validée.
+   ========================================================================= */
+const DEMO_BANK = [
+  { id:"D01", module:"M1", type:"isolé", enonce:"Concernant le lithium :",
+    items:[
+      {text:"Sa marge thérapeutique est étroite et impose une surveillance de la lithémie.",correct:true},
+      {text:"La lithémie résiduelle d'entretien se situe habituellement entre 0,6 et 0,8 mmol/L.",correct:true},
+      {text:"Il est principalement métabolisé par le foie via le CYP3A4.",correct:false},
+      {text:"Une déshydratation ou un régime désodé augmentent le risque de surdosage.",correct:true},
+      {text:"Il est dénué de risque tératogène au premier trimestre.",correct:false}
+    ], source:"Démo — thymorégulateurs"},
+  { id:"D02", module:"M3", type:"isolé", enonce:"Effets indésirables fréquemment associés aux ISRS :",
+    items:[
+      {text:"Troubles sexuels (baisse de la libido, anorgasmie).",correct:true},
+      {text:"Nausées et troubles digestifs en début de traitement.",correct:true},
+      {text:"Effet anticholinergique marqué typique de la classe.",correct:false},
+      {text:"Hyponatrémie, notamment chez le sujet âgé.",correct:true},
+      {text:"Syndrome de sevrage à l'arrêt brutal (surtout demi-vies courtes).",correct:true}
+    ], source:"Démo — antidépresseurs"},
+  { id:"D03", module:"M2", type:"isolé", enonce:"Concernant les benzodiazépines :",
+    items:[
+      {text:"Modulateurs allostériques positifs du récepteur GABA-A.",correct:true},
+      {text:"Elles augmentent la fréquence d'ouverture du canal chlore.",correct:true},
+      {text:"Elles bloquent les récepteurs NMDA du glutamate.",correct:false},
+      {text:"Tolérance et dépendance possibles en usage prolongé.",correct:true},
+      {text:"Le flumazénil en est l'antagoniste spécifique.",correct:true}
+    ], source:"Démo — anxiolytiques"},
+  { id:"D04", module:"M4", type:"isolé", enonce:"Concernant les antipsychotiques de première génération :",
+    items:[
+      {text:"Effet antipsychotique lié au blocage des récepteurs D2.",correct:true},
+      {text:"Risque d'effets extrapyramidaux (dystonie, akathisie, syndrome parkinsonien).",correct:true},
+      {text:"Ils n'entraînent jamais d'hyperprolactinémie.",correct:false},
+      {text:"Le syndrome malin des neuroleptiques est une complication rare mais grave.",correct:true},
+      {text:"Des dyskinésies tardives peuvent survenir en traitement prolongé.",correct:true}
+    ], source:"Démo — antipsychotiques"},
+  { id:"D05", module:"M4", type:"isolé", enonce:"Concernant la clozapine :",
+    items:[
+      {text:"Indiquée dans la schizophrénie résistante.",correct:true},
+      {text:"Risque d'agranulocytose imposant une surveillance de la NFS.",correct:true},
+      {text:"C'est un antipsychotique de première génération.",correct:false},
+      {text:"Elle peut induire une myocardite, surtout en début de traitement.",correct:true},
+      {text:"Elle abaisse le seuil épileptogène à doses élevées.",correct:true}
+    ], source:"Démo — antipsychotiques"},
+  { id:"D06", module:"M1", type:"isolé", enonce:"Concernant l'acide valproïque :",
+    items:[
+      {text:"Tératogène, contre-indiqué chez la femme en âge de procréer sans prévention.",correct:true},
+      {text:"Risque de malformations du tube neural et de troubles neurodéveloppementaux.",correct:true},
+      {text:"Il est dépourvu de toute interaction médicamenteuse.",correct:false},
+      {text:"Il peut provoquer une hépatotoxicité et une thrombopénie.",correct:true},
+      {text:"C'est un inducteur enzymatique puissant du CYP.",correct:false}
+    ], source:"Démo — thymorégulateurs"},
+  { id:"D07", module:"M2", type:"isolé", enonce:"Pharmacocinétique de la fluoxétine :",
+    items:[
+      {text:"Demi-vie longue, avec un métabolite actif (norfluoxétine) à demi-vie encore plus longue.",correct:true},
+      {text:"Sa longue demi-vie réduit le risque de syndrome de sevrage.",correct:true},
+      {text:"C'est un inhibiteur du CYP2D6.",correct:true},
+      {text:"Sa demi-vie courte impose plusieurs prises quotidiennes.",correct:false}
+    ], source:"Démo — pharmacocinétique"},
+  { id:"D08", module:"M3", type:"isolé", enonce:"Concernant les IMAO non sélectifs et irréversibles :",
+    items:[
+      {text:"Ils imposent un régime pauvre en tyramine (risque de crise hypertensive).",correct:true},
+      {text:"L'association à un ISRS expose au syndrome sérotoninergique.",correct:true},
+      {text:"Ils peuvent être associés sans délai à un autre sérotoninergique.",correct:false},
+      {text:"Un délai de wash-out est nécessaire lors d'un relais.",correct:true}
+    ], source:"Démo — antidépresseurs"},
+  { id:"D09", module:"M1", type:"isolé", enonce:"Concernant la lamotrigine :",
+    items:[
+      {text:"Une titration lente réduit le risque de rash cutané.",correct:true},
+      {text:"Elle peut être responsable d'un syndrome de Stevens-Johnson.",correct:true},
+      {text:"Surtout utilisée en prévention des épisodes dépressifs du trouble bipolaire.",correct:true},
+      {text:"Elle nécessite une surveillance de la lithémie.",correct:false}
+    ], source:"Démo — thymorégulateurs"},
+  { id:"D10", module:"M3", type:"isolé", enonce:"Concernant les antidépresseurs tricycliques :",
+    items:[
+      {text:"Effets anticholinergiques (sécheresse buccale, constipation, rétention urinaire).",correct:true},
+      {text:"Cardiotoxiques en cas de surdosage (troubles du rythme et de conduction).",correct:true},
+      {text:"Dénués de risque en cas d'intoxication volontaire.",correct:false},
+      {text:"Hypotension orthostatique possible (blocage alpha-1).",correct:true}
+    ], source:"Démo — antidépresseurs"},
+  { id:"D11", module:"M5", type:"isolé", enonce:"Le syndrome sérotoninergique :",
+    items:[
+      {text:"Associe troubles neuromusculaires, dysautonomie et troubles mentaux.",correct:true},
+      {text:"Peut survenir lors de l'association de plusieurs agents sérotoninergiques.",correct:true},
+      {text:"Se traite notamment par arrêt des agents en cause et mesures symptomatiques.",correct:true},
+      {text:"Se développe typiquement après plusieurs semaines de traitement stable.",correct:false}
+    ], source:"Démo — iatrogénie"},
+  { id:"D12", module:"M6", type:"isolé", enonce:"Concernant le méthylphénidate :",
+    items:[
+      {text:"Il inhibe la recapture de la dopamine et de la noradrénaline.",correct:true},
+      {text:"Il est indiqué dans le TDAH.",correct:true},
+      {text:"Il relève en France de la réglementation des stupéfiants.",correct:true},
+      {text:"Il est dépourvu d'effet sur l'appétit et le sommeil.",correct:false}
+    ], source:"Démo — psychostimulants"},
+  { id:"D13", module:"M3", type:"isolé", enonce:"Délai d'action des antidépresseurs dans l'épisode dépressif caractérisé :",
+    items:[
+      {text:"L'effet thymoanaleptique apparaît habituellement après 2 à 4 semaines.",correct:true},
+      {text:"Le risque suicidaire doit être surveillé en début de traitement, surtout chez le sujet jeune.",correct:true},
+      {text:"L'effet antidépresseur est immédiat dès la première prise.",correct:false},
+      {text:"L'absence d'amélioration après délai et posologie adéquats peut faire changer de molécule.",correct:true}
+    ], source:"Démo — antidépresseurs"},
+  { id:"D14", module:"M2", type:"isolé", enonce:"Concernant les paramètres pharmacocinétiques :",
+    items:[
+      {text:"La biodisponibilité orale peut être réduite par un effet de premier passage hépatique.",correct:true},
+      {text:"La demi-vie conditionne le rythme d'administration et le délai d'équilibre.",correct:true},
+      {text:"L'état d'équilibre est atteint après environ 4 à 5 demi-vies.",correct:true},
+      {text:"Le volume de distribution mesure directement la quantité éliminée par les reins.",correct:false}
+    ], source:"Démo — pharmacocinétique"},
+  { id:"D15", module:"M7", type:"isolé", enonce:"Médicaments de la dépendance à l'alcool :",
+    items:[
+      {text:"L'acamprosate vise au maintien de l'abstinence.",correct:true},
+      {text:"La naltrexone est un antagoniste opioïde utilisé dans la dépendance à l'alcool.",correct:true},
+      {text:"Le disulfirame entraîne un effet antabuse en cas de prise d'alcool.",correct:true},
+      {text:"Le nalméfène est indiqué pour augmenter la consommation d'alcool.",correct:false}
+    ], source:"Démo — addictologie"},
+  { id:"D16", module:"M3", type:"cas_clinique",
+    cas:"Une patiente de 72 ans traitée par sertraline depuis 3 semaines pour un épisode dépressif présente asthénie, céphalées et confusion. Le bilan retrouve une natrémie à 126 mmol/L.",
+    enonce:"Concernant cette situation :",
+    items:[
+      {text:"Une hyponatrémie médicamenteuse (SIADH) sous ISRS est à évoquer.",correct:true},
+      {text:"Le sujet âgé est particulièrement à risque d'hyponatrémie sous ISRS.",correct:true},
+      {text:"Cette hyponatrémie est sans rapport possible avec l'antidépresseur.",correct:false},
+      {text:"Une surveillance de la natrémie peut se justifier chez le sujet âgé sous ISRS.",correct:true}
+    ], source:"Démo — cas clinique"}
+];
+
+/* =========================================================================
+   CHARGEUR TOLÉRANT — normalise une base externe vers le schéma interne
+   ========================================================================= */
+function pick(obj, keys){ for(const k of keys){ if(obj[k]!==undefined && obj[k]!==null) return obj[k]; } return undefined; }
+function toBool(v){
+  if(typeof v==="boolean") return v;
+  if(typeof v==="number") return v===1;
+  if(typeof v==="string") return ["true","1","vrai","oui","correct","exact","exacte","x"].includes(v.trim().toLowerCase());
+  return false;
+}
+function normalizeBank(raw){
+  let arr = raw;
+  if(!Array.isArray(arr)){
+    arr = pick(raw||{}, ["questions","qcm","items","data","liste"]);
+  }
+  if(!Array.isArray(arr)) throw new Error("Le fichier ne contient pas de tableau de questions.");
+  const out=[];
+  arr.forEach((q,i)=>{
+    if(!q || typeof q!=="object") return;
+    const enonce = pick(q,["enonce","énoncé","question","stem","titre","intitule","intitulé","text"]);
+    let items = pick(q,["items","propositions","options","choices","reponses","réponses","answers"]);
+    if(!Array.isArray(items)) return;
+    // indices/lettres corrects au niveau de la question ?
+    let correctSet = null;
+    const qc = pick(q,["correct","corrects","bonnes_reponses","bonnesReponses","solution","solutions"]);
+    if(Array.isArray(qc)){
+      correctSet = qc.map(x=> typeof x==="string" ? x.trim().toUpperCase() : x);
+    }
+    const normItems = items.map((it,j)=>{
+      if(typeof it==="string"){
+        let correct=false;
+        if(correctSet){
+          const letter=String.fromCharCode(65+j);
+          correct = correctSet.includes(j) || correctSet.includes(letter) || correctSet.includes(String(j+1));
+        }
+        return {text:it, correct};
+      }
+      const text = pick(it,["text","texte","libelle","libellé","proposition","label","enonce","value"]) ?? String(it);
+      let correct = pick(it,["correct","exacte","exact","isCorrect","is_correct","est_correct","vrai","bonne","juste"]);
+      if(correct===undefined && correctSet){
+        const letter=String.fromCharCode(65+j);
+        correct = correctSet.includes(j) || correctSet.includes(letter) || correctSet.includes(String(j+1));
+      }
+      return {text:String(text), correct:toBool(correct)};
+    });
+    if(!enonce || normItems.length<2) return;
+    out.push({
+      id: pick(q,["id","identifiant","ref"]) ?? ("Q"+(i+1)),
+      module: String(pick(q,["module","module_id","mod","matiere","matière"]) ?? "—"),
+      type: pick(q,["type","format"]) ?? "isolé",
+      cas: pick(q,["cas","case","caseText","contexte","vignette","scenario"]) ?? null,
+      enonce: String(enonce),
+      items: normItems,
+      source: pick(q,["source","source_origin","origine","reference","référence"]) ?? null
+    });
+  });
+  if(out.length===0) throw new Error("Aucune question exploitable n'a été trouvée.");
+  return out;
+}
+
+/* =========================================================================
+   ÉTAT & LOGIQUE
+   ========================================================================= */
+let BANK = DEMO_BANK.slice();
+let isDemo = true;
+const S = { deck:[], idx:0, answers:{}, length:40, durationSec:6000, remaining:6000, timerId:null, startTs:0 };
+
+const $ = sel => document.querySelector(sel);
+const el = (tag, cls, html) => { const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; };
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function refreshBankLine(){
+  $("#bank-count").textContent = BANK.length + " questions disponibles";
+  const badge=$("#bank-badge");
+  if(isDemo){ badge.className="badge demo"; badge.textContent="démonstration"; }
+  else { badge.className="badge live"; badge.textContent="base chargée"; }
+  const want = clampN(parseInt($("#cfg-n").value,10)||40);
+  const eff = Math.min(want, BANK.length);
+  $("#cfg-n-echo").textContent = eff;
+  $("#begin-note").textContent = (eff<want)
+    ? ("Seulement "+BANK.length+" questions disponibles : l'examen en tirera "+eff+".")
+    : "";
+}
+function clampN(n){ return Math.max(1, Math.min(200, n||1)); }
+
+/* ---- scoring d'un QCM selon le barème Thibaut ---- */
+function scoreQuestion(q, checked){
+  const nC = q.items.filter(it=>it.correct).length;
+  const nF = q.items.length - nC;
+  const posUnit = nC>0 ? 1/nC : 0;
+  const negUnit = nF>0 ? 1/nF : 0;
+  let score=0, goodPicks=0, badPicks=0;
+  q.items.forEach((it,j)=>{
+    if(checked.has(j)){
+      if(it.correct){ score+=posUnit; goodPicks++; }
+      else { score-=negUnit; badPicks++; }
+    }
+  });
+  // bornes de sécurité
+  if(score>1) score=1; if(score<-1) score=-1;
+  return {score, goodPicks, badPicks, nC, nF};
+}
+
+/* =========================================================================
+   DÉMARRAGE
+   ========================================================================= */
+function startExam(){
+  S.length = Math.min(clampN(parseInt($("#cfg-n").value,10)||40), BANK.length);
+  const mins = Math.max(1, Math.min(300, parseInt($("#cfg-t").value,10)||100));
+  S.durationSec = mins*60;
+  S.remaining = S.durationSec;
+  S.deck = shuffle(BANK).slice(0, S.length);
+  S.idx = 0;
+  S.answers = {};
+  S.startTs = Date.now();
+
+  $("#start").classList.add("hidden");
+  $("#results").classList.add("hidden");
+  $("#exam").classList.remove("hidden");
+  window.scrollTo(0,0);
+
+  buildDots();
+  renderQuestion();
+  startTimer();
+}
+
+function startTimer(){
+  if(S.timerId) clearInterval(S.timerId);
+  updateTimer();
+  S.timerId = setInterval(()=>{
+    S.remaining--;
+    updateTimer();
+    if(S.remaining<=0){ clearInterval(S.timerId); finishExam(true); }
+  }, 1000);
+}
+function fmt(sec){
+  sec=Math.max(0,sec);
+  const m=Math.floor(sec/60), s=sec%60;
+  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function updateTimer(){
+  $("#timer-val").textContent = fmt(S.remaining);
+  const t=$("#timer");
+  t.classList.toggle("warn", S.remaining<=600 && S.remaining>60);
+  t.classList.toggle("crit", S.remaining<=60);
+}
+
+/* =========================================================================
+   RENDU D'UNE QUESTION
+   ========================================================================= */
+function renderQuestion(){
+  const q = S.deck[S.idx];
+  const checked = S.answers[S.idx] || new Set();
+  const card = $("#qcard");
+  card.innerHTML="";
+
+  const tags = el("div","q-tags");
+  tags.appendChild(el("span","tag","Module "+q.module));
+  if(q.type==="cas_clinique" || q.cas) tags.appendChild(el("span","tag case","Cas clinique"));
+  card.appendChild(tags);
+
+  if(q.cas) card.appendChild(el("div","q-case", q.cas));
+  card.appendChild(el("div","q-enonce", q.enonce));
+  card.appendChild(el("div","q-hint","Une ou plusieurs propositions peuvent être exactes."));
+
+  const opts = el("div","opts");
+  q.items.forEach((it,j)=>{
+    const wrap = el("label","opt"+(checked.has(j)?" sel":""));
+    const box = el("input"); box.type="checkbox"; box.checked=checked.has(j);
+    box.addEventListener("change",()=>{
+      const set = S.answers[S.idx] || new Set();
+      if(box.checked) set.add(j); else set.delete(j);
+      S.answers[S.idx]=set;
+      wrap.classList.toggle("sel", box.checked);
+    });
+    const txt = el("span","otxt");
+    txt.innerHTML = '<span class="oletter">'+String.fromCharCode(65+j)+'.</span>'+escapeHtml(it.text);
+    wrap.appendChild(box); wrap.appendChild(txt);
+    opts.appendChild(wrap);
+  });
+  card.appendChild(opts);
+
+  $("#counter").textContent = "QCM "+(S.idx+1)+" / "+S.length;
+  $("#prog").style.width = ((S.idx)/S.length*100)+"%";
+  $("#multi-note").textContent = (S.idx===S.length-1) ? "Dernier QCM." : "Une fois validé, ce QCM ne pourra plus être modifié.";
+  $("#next").textContent = (S.idx===S.length-1) ? "Valider et terminer" : "Valider et continuer";
+  highlightDot();
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---- feuille de réponses ---- */
+function buildDots(){
+  const box=$("#dots"); box.innerHTML="";
+  for(let i=0;i<S.length;i++){
+    const d=el("div","dot blank",String(i+1));
+    box.appendChild(d);
+  }
+}
+function highlightDot(){
+  const dots=$("#dots").children;
+  for(let i=0;i<dots.length;i++){
+    dots[i].classList.toggle("cur", i===S.idx);
+  }
+}
+function lockDot(i){
+  const d=$("#dots").children[i]; if(!d) return;
+  const answered = (S.answers[i] && S.answers[i].size>0);
+  d.classList.remove("blank","cur");
+  d.classList.add(answered ? "done" : "blank");
+  if(!answered) d.classList.add("blank");
+}
+
+/* ---- validation (sens unique) ---- */
+function next(){
+  const set = S.answers[S.idx] || new Set();
+  if(set.size===0){
+    if(!confirm("Aucune proposition cochée pour ce QCM. Le valider quand même ? (impossible d'y revenir ensuite)")) return;
+  }
+  lockDot(S.idx);
+  if(S.idx >= S.length-1){ finishExam(false); return; }
+  S.idx++;
+  renderQuestion();
+  document.querySelector("#exam").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* =========================================================================
+   RÉSULTATS
+   ========================================================================= */
+function finishExam(timedOut){
+  if(S.timerId) clearInterval(S.timerId);
+  // si on termine sans avoir validé le QCM courant, on prend l'état coché
+  let raw=0, good=0, bad=0, answered=0;
+  const perMod={}; const detail=[];
+  S.deck.forEach((q,i)=>{
+    const checked = S.answers[i] || new Set();
+    const r = scoreQuestion(q, checked);
+    raw += r.score; good += r.goodPicks; bad += r.badPicks;
+    if(checked.size>0) answered++;
+    if(!perMod[q.module]) perMod[q.module]={score:0,max:0};
+    perMod[q.module].score += r.score; perMod[q.module].max += 1;
+    detail.push({q,checked,r});
+  });
+
+  const note20 = (raw / S.length) * 20;
+  const note20disp = Math.max(0, note20);
+  const pass = note20 >= 10;
+  const usedSec = Math.min(S.durationSec, Math.round((Date.now()-S.startTs)/1000));
+
+  // verdict
+  const vt=$("#vt-score");
+  vt.classList.toggle("pass", pass);
+  vt.classList.toggle("fail", !pass);
+  $("#note20").textContent = note20disp.toFixed(1).replace(".",",");
+  $("#verdict-label").textContent = pass ? "Admise" : "Sous le seuil";
+  $("#raw").textContent = raw.toFixed(1).replace(".",",")+" / "+S.length;
+  $("#answered").textContent = answered+" / "+S.length;
+  $("#time-used").textContent = fmt(usedSec)+(timedOut?" ⏱":"");
+  $("#good-items").textContent = good;
+  $("#bad-items").textContent = bad;
+  $("#vt-foot").innerHTML = pass
+    ? "Au-dessus de la barre des 10/20. "+(isDemo?"Banque de démonstration — relancez sur la base validée pour un score représentatif.":"Score représentatif des conditions de l'épreuve.")
+    : "En dessous des 10/20 sur ce tirage"+(isDemo?" (banque de démonstration)":"")+". La revue ci-dessous montre où les points se sont joués.";
+
+  // par module
+  const mb=$("#modbreak"); mb.innerHTML="";
+  Object.keys(perMod).sort().forEach(m=>{
+    const {score,max}=perMod[m];
+    const pct = Math.max(0, Math.min(1, max>0 ? score/max : 0))*100;
+    const row=el("div","mod-row");
+    row.appendChild(el("div","mlab",m));
+    const bar=el("div","mbar"); const fill=el("i"); fill.style.width=pct+"%"; bar.appendChild(fill); row.appendChild(bar);
+    row.appendChild(el("div","mval", score.toFixed(1).replace(".",",")+" / "+max));
+    mb.appendChild(row);
+  });
+
+  // revue
+  const rev=$("#review"); rev.innerHTML="";
+  detail.forEach((d,i)=>{
+    const {q,checked,r}=d;
+    const block=el("div","rev");
+    const cls = r.score>0.001?"p":(r.score<-0.001?"n":"z");
+    const head=el("div","rev-head");
+    head.innerHTML='<span class="rev-n">QCM '+(i+1)+'</span>'+
+      '<span class="rev-q">'+escapeHtml(q.enonce)+'</span>'+
+      '<span class="rev-score '+cls+'">'+(r.score>=0?"+":"")+r.score.toFixed(2).replace(".",",")+'</span>';
+    const body=el("div","rev-body");
+    if(q.cas) body.appendChild(el("div","rev-case", q.cas));
+    q.items.forEach((it,j)=>{
+      const picked=checked.has(j);
+      let cl="rev-opt", mk="";
+      if(it.correct && picked){ cl+=" correct"; mk="✓ cochée juste"; }
+      else if(it.correct && !picked){ cl+=" correct missed"; mk="✓ à cocher"; }
+      else if(!it.correct && picked){ cl+=" wrongpick"; mk="✕ cochée faux"; }
+      else { mk="·"; }
+      const o=el("div",cl);
+      o.innerHTML='<span class="mk">'+mk+'</span><span>'+escapeHtml(it.text)+'</span>';
+      body.appendChild(o);
+    });
+    // jauge -1..+1
+    const g=el("div","gauge");
+    const pos=((r.score+1)/2)*100;
+    const col = r.score>0.001?"var(--ok)":(r.score<-0.001?"var(--bad)":"var(--ink-faint)");
+    g.innerHTML='<div class="track"><div class="zero"></div>'+
+      '<div class="mark" style="left:'+pos+'%;background:'+col+'"></div></div>'+
+      '<div class="scale"><span>−1</span><span>0</span><span>+1</span></div>';
+    body.appendChild(g);
+    if(q.source) body.appendChild(el("div","rev-src","Source : "+escapeHtml(q.source)));
+
+    head.addEventListener("click",()=>{ body.style.display = body.style.display==="none"?"block":"none"; });
+    body.style.display="none";
+    block.appendChild(head); block.appendChild(body);
+    rev.appendChild(block);
+  });
+
+  $("#exam").classList.add("hidden");
+  $("#results").classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+
+/* =========================================================================
+   ÉVÉNEMENTS
+   ========================================================================= */
+$("#cfg-n").addEventListener("input", refreshBankLine);
+$("#load-btn").addEventListener("click", ()=> $("#file").click());
+$("#file").addEventListener("change", e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const parsed=JSON.parse(rd.result);
+      const nb=normalizeBank(parsed);
+      BANK=nb; isDemo=false;
+      $("#load-note").textContent = nb.length+" questions chargées avec succès.";
+      $("#load-note").style.color="var(--ok)";
+      refreshBankLine();
+    }catch(err){
+      $("#load-note").textContent = "Échec : "+err.message+" (voir le format attendu ci-dessous)";
+      $("#load-note").style.color="var(--bad)";
+    }
+  };
+  rd.readAsText(f,"utf-8");
+});
+$("#begin").addEventListener("click", startExam);
+$("#next").addEventListener("click", next);
+$("#finish-early").addEventListener("click", ()=>{
+  if(confirm("Terminer l'examen maintenant et voir le résultat ?")){ finishExam(false); }
+});
+$("#again").addEventListener("click", startExam);
+$("#back-home").addEventListener("click", ()=>{
+  $("#results").classList.add("hidden");
+  $("#exam").classList.add("hidden");
+  $("#start").classList.remove("hidden");
+  window.scrollTo(0,0);
+});
+
+// garde-fou : prévenir une fermeture accidentelle pendant l'épreuve
+window.addEventListener("beforeunload", e=>{
+  if(!$("#exam").classList.contains("hidden")){ e.preventDefault(); e.returnValue=""; }
+});
+
+refreshBankLine();
+</script>
+</body>
+</html>
